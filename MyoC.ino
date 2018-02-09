@@ -30,9 +30,6 @@ Servo myservo;  // create servo object to control a servo
 
 int pos = 0;    // variable to store the servo position
 
-void setup() {
-  myservo.attach(9);  // attaches the servo on pin 9 to the servo object
-}
 
 // We'll use analog input 0 to measure the temperature sensor's
 // signal pin.
@@ -42,6 +39,8 @@ const int EMG = 0;
 
 void setup()
 {
+  myservo.attach(9);  // attaches the servo on pin 9 to the servo object
+  
   // In this sketch, we'll use the Arduino's serial port
   // to send text back to the main computer. For both sides to
   // communicate properly, they need to be set to the same speed.
@@ -67,6 +66,15 @@ void loop()
 
   if (voltage > 10)
  {
+  for (pos = 0; pos <= 180; pos += 1) { // goes from 0 degrees to 180 degrees
+    // in steps of 1 degree
+    myservo.write(pos);              // tell servo to go to position in variable 'pos'
+    delay(15);                       // waits 15ms for the servo to reach the position
+  }
+  for (pos = 180; pos >= 0; pos -= 1) { // goes from 180 degrees to 0 degrees
+    myservo.write(pos);              // tell servo to go to position in variable 'pos'
+    delay(15);                       // waits 15ms for the servo to reach the position
+  }
   
   // Perform a fake reading of 10 readings
   for (int i = 0;i<10;i++)
@@ -74,7 +82,7 @@ void loop()
     voltage = abs(getVoltage(EMG));
     voltage = voltage -495;
     voltage = abs(voltage);
-    
+    // set up a flag to change in motor
   }
   
   }
