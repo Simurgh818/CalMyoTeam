@@ -55,53 +55,45 @@ void setup()
 }
 
 
-void loop()
-{
+void loop() {
 
   float voltage;
   voltage = abs(getVoltage(EMG));
   
   voltage = voltage -495;
   voltage = abs(voltage);
+ 
+  int closeHand = 0; //Always start with flag set LOW
 
   if (voltage > 10)
- {
-  for (pos = 0; pos <= 180; pos += 1) { // goes from 0 degrees to 180 degrees
-    // in steps of 1 degree
-    myservo.write(pos);              // tell servo to go to position in variable 'pos'
-    delay(15);                       // waits 15ms for the servo to reach the position
+  {  
+  // Perform a fake reading of 10 data points
+    for (int i = 0; i<10 ;i++) {
+      voltage = abs(getVoltage(EMG));
+      voltage = voltage - 495;
+      voltage = abs(voltage);
+      // set up a flag 
+      if(voltage > 10) {
+        // Update the value of flag
+        closeHand = 1;
+      }
+    }
   }
-  for (pos = 180; pos >= 0; pos -= 1) { // goes from 180 degrees to 0 degrees
-    myservo.write(pos);              // tell servo to go to position in variable 'pos'
-    delay(15);                       // waits 15ms for the servo to reach the position
+
+  if(closedHand == 1) {
+    //turnServo(180); //Close Hand
+    myservo.write(180);
+    closeHand = 0; // Update the value of flag
+  } else {
+    //turnServo(0); //Open Hand
+    myservo.write(0);
   }
   
-  // Perform a fake reading of 10 readings
-  for (int i = 0;i<10;i++)
-  {
-    voltage = abs(getVoltage(EMG));
-    voltage = voltage -495;
-    voltage = abs(voltage);
-    // set up a flag to change in motor
-  }
-  
-  }
- }
-  // To open the serial monitor window, upload your code,
-  // then click the "magnifying glass" button at the right edge
-  // of the Arduino IDE toolbar. The serial monitor window
-  // will open.
 
   // (NOTE: remember we said that the communication speed
   // must be the same on both sides. Ensure that the baud rate
   // control at the bottom of the window is set to 9600. If it
   // isn't, change it to 9600.)
-  
-  // Also note that every time you upload a new sketch to the
-  // Arduino, the serial monitor window will close. It does this
-  // because the serial port is also used to upload code!
-  // When the upload is complete, you can re-open the serial
-  // monitor window.
   
   // To send data from the Arduino to the serial monitor window,
   // we use the Serial.print() function. 
@@ -111,8 +103,9 @@ void loop()
   // Note that the above statement uses "println", which will insert 
   // a "carriage return" character at the end of whatever it prints, 
   // moving down to the NEXT line.
-   
-  
+
+  /* Are we reading every 500ms?????? That's really slow
+  In that case, the timing for the fake reads would be different */
   delay(500); // repeat once per second (change as you wish!)
 }
 
@@ -123,28 +116,6 @@ float getVoltage(int pin)
   // to read. You might notice that this function does not have
   // "void" in front of it; this is because it returns a floating-
   // point value, which is the true voltage on that pin (0 to 5V).
-  
-  // You can write your own functions that take in parameters
-  // and return values (This is similar to Matlab functions). Here's how:
-  
-    // To take in parameters, put their type and name in the
-    // parenthesis after the function name (see above). You can
-    // have multiple parameters, separated with commas.
-    
-    // To return a value, put the type BEFORE the function name
-    // (see "float", above), and use a return() statement in your code
-    // to actually return the value (see below).
-  
-    // If you don't need to get any parameters, you can just put
-    // "()" after the function name.
-  
-    // If you don't need to return a value, just write "void" before
-    // the function name.
 
-  // Here's the return statement for this function. We're doing
-  // all the math we need to do within this statement:
   return (analogRead(pin));
-  // subtract ~500 for spiker box. Note this value is based on calibration
-  // studies with a single spiker box - your box may have a different "zero" point.
-  
 }
